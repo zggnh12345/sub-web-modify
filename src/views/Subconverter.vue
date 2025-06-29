@@ -10,6 +10,7 @@
             <!--
               <svg-icon class="bilibili" icon-class="bilibili" style="float:right;margin-left:10px"
               @click="gotoBiliBili" /> -->
+            <svg-icon class="blog" icon-class="blog" style="float:right;margin-left:10px" @click="gotoBlog" />
             <svg-icon class="youguan" icon-class="youtube" style="float:right;margin-left:10px" @click="gotoYouTuBe" />
             <svg-icon class="channel" icon-class="telegram" style="float:right;margin-left: 10px"
               @click="gotoTgChannel" />
@@ -299,6 +300,7 @@ const advancedVideo = process.env.VUE_APP_ADVANCED_VIDEO
 const tgBotLink = process.env.VUE_APP_BOT_LINK
 const yglink = process.env.VUE_APP_YOUTUBE_LINK
 const bzlink = process.env.VUE_APP_BILIBILI_LINK
+const blogLink = process.env.VUE_APP_BLOG_LINK
 const downld = 'http://' + window.location.host + '/download.html'
 export default {
   data() {
@@ -939,6 +941,9 @@ export default {
     },
     gotoYouTuBe() {
       window.open(yglink);
+    },
+    gotoBlog() {
+      window.open(blogLink);
     },
     toolsDown() {
       window.open(downld);
