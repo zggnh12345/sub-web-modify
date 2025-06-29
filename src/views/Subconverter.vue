@@ -193,7 +193,8 @@
                 </el-button>
               </el-form-item>
 
-              <el-form-item label-width="0px" style="margin-top: 10px; text-align: center;">
+              <!-- 【修改】只在非深色模式下显示评论开关 -->
+              <el-form-item v-if="!isDarkMode" label-width="0px" style="margin-top: 10px; text-align: center;">
                 <el-switch
                   v-model="showComments"
                   active-text="显示评论区"
@@ -330,6 +331,7 @@ export default {
     return {
       showComments: false,
       twikooInitialized: false,
+      isDarkMode: false, // 【修改】新增状态
       backendVersion: "",
       centerDialogVisible: false,
       activeName: 'first',
@@ -863,20 +865,27 @@ export default {
           document.getElementsByTagName('body')[0].setAttribute('class', 'dark-mode');
         }
       }
+      // 【修改】同步 isDarkMode 状态
+      this.isDarkMode = document.getElementsByTagName('body')[0].className === 'dark-mode';
     },
     change() {
       var zhuti = document.getElementsByTagName('body')[0].className;
       if (zhuti === 'light-mode') {
         document.getElementsByTagName('body')[0].setAttribute('class', 'dark-mode');
         window.localStorage.setItem('localTheme', 'dark-mode');
+        // 【修改】更新状态并强制关闭评论
+        this.isDarkMode = true;
+        this.showComments = false;
       }
       if (zhuti === 'dark-mode') {
         document.getElementsByTagName('body')[0].setAttribute('class', 'light-mode');
         window.localStorage.setItem('localTheme', 'light-mode');
+        // 【修改】更新状态
+        this.isDarkMode = false;
       }
     },
     tanchuang() {
-      this.$alert(`<div style="text-align:center;font-size:15px"><strong><span style="font-size:20px;color:red">apiurl.v1.mk已被蔷，请更换最新的url.v1.mk</span></strong></br><strong><span style="font-size:20px">本站官方TG交流群：</span><span><a href="https://t.me/feiyangdigital" target="_blank" style="color:red;font-size:20px;text-decoration:none">点击加入</a></span></strong></br><strong><span style="font-size:20px">IEPL高端机场（<span style="color:blue">原生支持奈飞非自制剧、Disney Plus、HBO等各种流媒体，支持Chat-GPT和ISP住宅IP助力Tiktok等跨境贸易使用</span>）：</span><span><a href="https://www.mcwy.org" style="color:red;font-size:20px;text-decoration:none">点击注册</a></span></strong></br><strong><span style="font-size:20px">奈飞、ChatGPT合租（<span style="color:blue">优惠码：feiyang</span>）：</span><span><a href="https://hezu.v1.mk/" style="color:red;font-size:20px;text-decoration:none">点击上车</a></span></strong></br><strong><span style="font-size:20px">115蓝光4K原盘内部资源群：</span><span><a href="https://115.metshop.top" target="_blank" style="color:red;font-size:20px;text-decoration:none">点击查看</a></span></strong></br>本站服务器赞助机场-牧场物语，是一家拥有BGP中继+IEPL企业级内网专线的高端机场，适合各个价位要求的用户，牧场物语采用最新的奈飞非自制剧解决方案，出口随机更换IP，确保尽可能的每个用户可以用上独立IP，以此来稳定解决奈飞非自制剧的封锁，并推出7*24小时奈飞非自制剧节点自动检测系统，用户再也不用自己手动一个个的乱试节点了，目前牧场的新加坡，台湾等节区域点均可做到24H稳定非自制剧观看，支持Chat-GPT和ISP住宅IP助力Tiktok等跨境贸易使用！</br></div>`, '信息面板', {
+      this.$alert(`<div style="text-align:center; font-size: 16px;"><strong>周润发 | 提供维护:</strong> <a href="https://d.zrf.me/tgq" target="_blank" style="color: #409EFF; text-decoration: none;">TG群组</a> <a href="https://d.zrf.me/blog" target="_blank" style="color: #409EFF; text-decoration: none;">Blog</a></div>`, '信息面板', {
         confirmButtonText: '确定',
         dangerouslyUseHTMLString: true,
         customClass: 'msgbox'
