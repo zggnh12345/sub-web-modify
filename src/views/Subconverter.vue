@@ -192,11 +192,32 @@
                   @click="centerDialogVisible = true">视频教程
                 </el-button>
               </el-form-item>
+
+              <el-form-item label-width="0px" style="margin-top: 10px; text-align: center;">
+                <el-switch
+                  v-model="showComments"
+                  active-text="显示评论区"
+                  inactive-text="隐藏评论区">
+                </el-switch>
+              </el-form-item>
+
             </el-form>
           </el-container>
         </el-card>
       </el-col>
     </el-row>
+
+    <el-row v-show="showComments" style="margin-top: 10px;">
+      <el-col>
+        <el-card>
+          <div slot="header">
+            <div style="text-align:center;font-size:15px">评 论 交 流</div>
+          </div>
+          <div id="twikoo-comment"></div>
+        </el-card>
+      </el-col>
+    </el-row>
+
     <el-dialog title="请选择需要观看的视频教程" :visible.sync="centerDialogVisible" :show-close="false" width="40vh" top="30vh"
       center>
       <div label-width="0px" style="text-align: center">
@@ -286,6 +307,7 @@
     </el-dialog>
   </div>
 </template>
+
 <script>
 const project = process.env.VUE_APP_PROJECT
 const configScriptBackend = process.env.VUE_APP_CONFIG_UPLOAD_BACKEND + '/api.php'
@@ -302,69 +324,22 @@ const yglink = process.env.VUE_APP_YOUTUBE_LINK
 const bzlink = process.env.VUE_APP_BILIBILI_LINK
 const blogLink = process.env.VUE_APP_BLOG_LINK
 const downld = 'http://' + window.location.host + '/download.html'
+
 export default {
   data() {
     return {
+      showComments: false,
+      twikooInitialized: false,
       backendVersion: "",
       centerDialogVisible: false,
       activeName: 'first',
-      // 是否为 PC 端
       isPC: true,
       btnBoolean: false,
       options: {
-        clientTypes: {
-          Clash: "clash",
-          "Surge4/5": "surge&ver=4",
-          "Sing-Box": "singbox",
-          V2Ray: "v2ray",
-          Trojan: "trojan",
-          ShadowsocksR: "ssr",
-          "混合订阅（mixed）": "mixed",
-          Surfboard: "surfboard",
-          Quantumult: "quan",
-          "Quantumult X": "quanx",
-          Loon: "loon",
-          Mellow: "mellow",
-          Surge3: "surge&ver=3",
-          Surge2: "surge&ver=2",
-          ClashR: "clashr",
-          "Shadowsocks(SIP002)": "ss",
-          "Shadowsocks Android(SIP008)": "sssub",
-          ShadowsocksD: "ssd",
-          "自动判断客户端": "auto",
-        },
-        shortTypes: {
-          "v1.mk": "https://v1.mk/short",
-          "d1.mk": "https://d1.mk/short",
-          "dlj.tf": "https://dlj.tf/short",
-          "suo.yt": "https://suo.yt/short",
-        },
-        customBackend: {
-          "周润发HK后端【由YXVM赞助服务】": "https://subapi.zrfme.com",
-          "CM负载均衡后端【vless reality+hy1+hy2】": "https://subapi.cmliussss.net",
-          "CM应急备用后端【vless reality+hy1+hy2】": "https://subapi.fxxk.dedyn.io",
-          "肥羊增强型后端【vless reality+hy1+hy2】": "https://url.v1.mk",
-          "肥羊备用后端【vless reality+hy1+hy2】": "https://sub.d1.mk",
-          nameless13提供: "https://www.nameless13.com",
-          subconverter作者提供: "https://sub.xeton.dev",
-          "sub-web作者提供": "https://api.wcc.best",
-          "920后端": "https://sub.xjz.im",
-          "Sublink后端（歪兔）": "https://api.sublink.dev",
-          "SoCloud 提供": "https://api.subcsub.com"
-        },
-        backendOptions: [
-          { value: "https://subapi.zrfme.com" },
-          { value: "https://subapi.cmliussss.net" },
-          { value: "https://subapi.fxxk.dedyn.io" },
-          { value: "https://url.v1.mk" },
-          { value: "https://sub.d1.mk" },
-          { value: "https://www.nameless13.com" },
-          { value: "https://sub.xeton.dev" },
-          { value: "https://api.wcc.best" },
-          { value: "https://sub.xjz.im" },
-          { value: "https://api.sublink.dev" },
-          { value: "https://api.subcsub.com" }
-        ],
+        clientTypes: { Clash: "clash", "Surge4/5": "surge&ver=4", "Sing-Box": "singbox", V2Ray: "v2ray", Trojan: "trojan", ShadowsocksR: "ssr", "混合订阅（mixed）": "mixed", Surfboard: "surfboard", Quantumult: "quan", "Quantumult X": "quanx", Loon: "loon", Mellow: "mellow", Surge3: "surge&ver=3", Surge2: "surge&ver=2", ClashR: "clashr", "Shadowsocks(SIP002)": "ss", "Shadowsocks Android(SIP008)": "sssub", ShadowsocksD: "ssd", "自动判断客户端": "auto" },
+        shortTypes: { "v1.mk": "https://v1.mk/short", "d1.mk": "https://d1.mk/short", "dlj.tf": "https://dlj.tf/short", "suo.yt": "https://suo.yt/short" },
+        customBackend: { "周润发HK后端【由YXVM赞助服务】": "https://subapi.zrfme.com", "CM负载均衡后端【vless reality+hy1+hy2】": "https://subapi.cmliussss.net", "CM应急备用后端【vless reality+hy1+hy2】": "https://subapi.fxxk.dedyn.io", "肥羊增强型后端【vless reality+hy1+hy2】": "https://url.v1.mk", "肥羊备用后端【vless reality+hy1+hy2】": "https://sub.d1.mk", nameless13提供: "https://www.nameless13.com", subconverter作者提供: "https://sub.xeton.dev", "sub-web作者提供": "https://api.wcc.best", "920后端": "https://sub.xjz.im", "Sublink后端（歪兔）": "https://api.sublink.dev", "SoCloud 提供": "https://api.subcsub.com" },
+        backendOptions: [ { value: "https://subapi.zrfme.com" }, { value: "https://subapi.cmliussss.net" }, { value: "https://subapi.fxxk.dedyn.io" }, { value: "https://url.v1.mk" }, { value: "https://sub.d1.mk" }, { value: "https://www.nameless13.com" }, { value: "https://sub.xeton.dev" }, { value: "https://api.wcc.best" }, { value: "https://sub.xjz.im" }, { value: "https://api.sublink.dev" }, { value: "https://api.subcsub.com" } ],
         remoteConfig: [
           {
             label: "CM规则",
@@ -793,44 +768,7 @@ export default {
           }
         ]
       },
-      form: {
-        sourceSubUrl: "",
-        clientType: "",
-        customBackend: this.getUrlParam() == "" ? "https://subapi.zrfme.com" : this.getUrlParam(),
-        shortType: "https://v1.mk/short",
-        remoteConfig: "https://raw.githubusercontent.com/cmliu/ACL4SSR/main/Clash/config/ACL4SSR_Online.ini",
-        excludeRemarks: "",
-        includeRemarks: "",
-        filename: "",
-        rename: "",
-        devid: "",
-        interval: "",
-        emoji: true,
-        nodeList: false,
-        extraset: false,
-        tls13: false,
-        udp: false,
-        xudp: false,
-        tfo: false,
-        sort: false,
-        expand: true,
-        scv: false,
-        fdn: false,
-        appendType: false,
-        insert: false, // 是否插入默认订阅的节点，对应配置项 insert_url
-        new_name: true, // 是否使用 Clash 新字段
-        tpl: {
-          surge: {
-            doh: false // dns 查询是否使用 DoH
-          },
-          clash: {
-            doh: false
-          },
-          singbox: {
-            ipv6: false
-          }
-        }
-      },
+      form: { sourceSubUrl: "", clientType: "", customBackend: this.getUrlParam() == "" ? "https://subapi.zrfme.com" : this.getUrlParam(), shortType: "https://v1.mk/short", remoteConfig: "https://raw.githubusercontent.com/cmliu/ACL4SSR/main/Clash/config/ACL4SSR_Online.ini", excludeRemarks: "", includeRemarks: "", filename: "", rename: "", devid: "", interval: "", emoji: true, nodeList: false, extraset: false, tls13: false, udp: false, xudp: false, tfo: false, sort: false, expand: true, scv: false, fdn: false, appendType: false, insert: false, new_name: true, tpl: { surge: { doh: false }, clash: { doh: false }, singbox: { ipv6: false } } },
       loading1: false,
       loading2: false,
       loading3: false,
@@ -848,12 +786,33 @@ export default {
       sampleConfig: remoteConfigSample
     };
   },
+
+  watch: {
+    showComments(newValue) {
+      if (newValue === true && !this.twikooInitialized) {
+        this.$nextTick(() => {
+          const currentTheme = document.body.className.includes('dark-mode') ? 'dark' : 'light';
+          try {
+            twikoo.init({
+              envId: 'https://twikoo.zrf.me',
+              el: '#twikoo-comment',
+              lang: 'zh-CN',
+              theme: currentTheme
+            });
+            this.twikooInitialized = true;
+          } catch (e) {
+            console.error("Twikoo initialization failed:", e);
+          }
+        });
+      }
+    }
+  },
+
   created() {
     document.title = "ZRF.ME | 在线订阅转换工具";
     this.isPC = this.$getOS().isPc;
   },
   mounted() {
-    //this.tanchuang();
     this.form.clientType = "clash";
     this.getBackendVersion();
     this.anhei();
@@ -867,7 +826,7 @@ export default {
     if (typeof darkMedia.addEventListener === 'function' || typeof lightMedia.addEventListener === 'function') {
       lightMedia.addEventListener('change', callback);
       darkMedia.addEventListener('change', callback);
-    } //监听系统主题，自动切换！
+    }
   },
   methods: {
     selectChanged() {
@@ -890,19 +849,19 @@ export default {
       const darkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)');
       if (getLocalTheme) {
         document.getElementsByTagName('body')[0].className = getLocalTheme;
-      } //读取localstorage，优先级最高！
+      }
       else if (getLocalTheme == null || getLocalTheme == "undefined" || getLocalTheme == "") {
         if (new Date().getHours() >= 19 || new Date().getHours() < 7) {
           document.getElementsByTagName('body')[0].setAttribute('class', 'dark-mode');
         } else {
           document.getElementsByTagName('body')[0].setAttribute('class', 'light-mode');
-        } //根据当前时间来判断，用来对付QQ等不支持媒体变量查询的浏览器
+        }
         if (lightMode && lightMode.matches) {
           document.getElementsByTagName('body')[0].setAttribute('class', 'light-mode');
         }
         if (darkMode && darkMode.matches) {
           document.getElementsByTagName('body')[0].setAttribute('class', 'dark-mode');
-        } //根据窗口主题来判断当前主题！
+        }
       }
     },
     change() {
@@ -1161,13 +1120,10 @@ export default {
         if (param.get("target")) {
           let target = param.get("target");
           if (target === 'surge' && param.get("ver")) {
-            // 类型为surge,有ver
             this.form.clientType = target + "&ver=" + param.get("ver");
           } else if (target === 'surge') {
-            //类型为surge,没有ver
             this.form.clientType = target + "&ver=4"
           } else {
-            //类型为其他
             this.form.clientType = target;
           }
         }
@@ -1323,3 +1279,20 @@ export default {
   }
 };
 </script>
+
+<style>
+/* 修正 Twikoo 在 el-card 内的样式 */
+#twikoo-comment .tk-main {
+  background-color: transparent !important;
+}
+
+/* 
+  新增：彻底隐藏图片上传功能相关的两个元素
+  1. 隐藏图片上传的图标按钮
+  2. 隐藏备用的 "选择文件" 输入框
+*/
+.tk-submit-action-icon[title="图片"],
+.tk-input-image {
+  display: none !important;
+}
+</style>
