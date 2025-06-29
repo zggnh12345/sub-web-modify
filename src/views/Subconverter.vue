@@ -350,8 +350,6 @@ export default {
           "sub-web作者提供": "https://api.wcc.best",
           "920后端": "https://sub.xjz.im",
           "Sublink后端（歪兔）": "https://api.sublink.dev",
-          "边缘订阅API": "https://pub-api-1.bianyuan.xyz",
-          "Next Convert 提供": "https://nexconvert.com",
           "SoCloud 提供": "https://api.subcsub.com"
         },
         backendOptions: [
@@ -365,8 +363,6 @@ export default {
           { value: "https://api.wcc.best" },
           { value: "https://sub.xjz.im" },
           { value: "https://api.sublink.dev" },
-          { value: "https://pub-api-1.bianyuan.xyz" },
-          { value: "https://nexconvert.com" },
           { value: "https://api.subcsub.com" }
         ],
         remoteConfig: [
